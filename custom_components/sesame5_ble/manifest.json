@@ -18,6 +18,7 @@
     ],
     "version": "0.2.0",
     "categories": [
+        "security_safety",
         "security_safety.locks_access"
     ]
 }
