@@ -78,10 +78,15 @@ The flow is designed as follows:
    - UUID
 3. If the device is already registered:
    - Ask the user to enter `SECRET_KEY`
+
+   > **Note:** For instructions on how to obtain the `SECRET_KEY`, please refer to the [gomalock](https://github.com/meronepy/gomalock) project.
+
 4. If the device is not registered:
    - Ask whether to register it
    - If approved, call the device registration flow
    - Save the resulting `SECRET_KEY`
+
+   > **Warning:** It is not recommended to bind unregistered devices. Since the QR code generation feature has not been implemented yet, once bound, you will not be able to share the device with other devices.
 
 ## Architecture notes
 
