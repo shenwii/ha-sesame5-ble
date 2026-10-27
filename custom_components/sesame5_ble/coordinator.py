@@ -79,7 +79,7 @@ class SesameCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def _touch_state(self, status_obj: Any, state: dict[str, Any]) -> dict[str, Any]:
         """Fixed fields for Touch devices."""
-        state["device_status"] = str(getattr(status_obj, "name", status_obj))
+        state["device_status"] = "online"
         state["card_count"] = getattr(status_obj, "card_count", None)
         state["fingerprint_count"] = getattr(status_obj, "fingerprint_count", None)
         state["password_count"] = getattr(status_obj, "password_count", None)
@@ -123,20 +123,13 @@ class SesameCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if not state:
             return {"device_kind": self.device_kind()}
 
-        if self.device_kind() == "touch":
-            touch_status = getattr(self.device, "device_status", None)
-            if touch_status is None:
-                state["device_status"] = "unknown"
-                return state
-            return self._touch_state(touch_status, state)
-
         mech_status = getattr(self.device, "mech_status", None)
         if mech_status is None:
             state["device_status"] = "not_logged_in"
-            state["locked"] = None
-            state["is_locked"] = None
             return state
-
+        if self.device_kind() == "touch":
+            return self._touch_state(mech_status, state)
+        
         return self._lock_state(mech_status, state)
 
     def _normalize_state_from_status(self, device_obj: Any | None, status_obj: Any | None) -> dict[str, Any]:

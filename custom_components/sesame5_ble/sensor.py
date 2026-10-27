@@ -137,6 +137,13 @@ class SesameTouchCardCountSensor(SensorEntity):
         self._coordinator = coordinator
         self._attr_unique_id = f"{entry.entry_id}_touch_cards"
         self._attr_name = "Cards Number"
+        self._attr_device_info = {
+            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "name": f"Sesame {entry.data.get('model', 'Device')}",
+            "manufacturer": "Sesame",
+            "model": entry.data.get("model", "Sesame"),
+            "connections": {("mac", entry.data.get("address", ""))},
+        }
 
     @property
     def native_value(self) -> int | None:
@@ -161,6 +168,13 @@ class SesameTouchFingerprintCountSensor(SensorEntity):
         self._coordinator = coordinator
         self._attr_unique_id = f"{entry.entry_id}_touch_fingerprints"
         self._attr_name = "Fingerprints Number"
+        self._attr_device_info = {
+            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "name": f"Sesame {entry.data.get('model', 'Device')}",
+            "manufacturer": "Sesame",
+            "model": entry.data.get("model", "Sesame"),
+            "connections": {("mac", entry.data.get("address", ""))},
+        }
 
     @property
     def native_value(self) -> int | None:
@@ -185,6 +199,13 @@ class SesameTouchPasswordCountSensor(SensorEntity):
         self._coordinator = coordinator
         self._attr_unique_id = f"{entry.entry_id}_touch_passwords"
         self._attr_name = "Passwords Number"
+        self._attr_device_info = {
+            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "name": f"Sesame {entry.data.get('model', 'Device')}",
+            "manufacturer": "Sesame",
+            "model": entry.data.get("model", "Sesame"),
+            "connections": {("mac", entry.data.get("address", ""))},
+        }
 
     @property
     def native_value(self) -> int | None:
