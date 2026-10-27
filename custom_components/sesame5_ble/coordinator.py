@@ -11,8 +11,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "sesame5_ble"
-
+from .const import DOMAIN
 
 class SesameCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Coordinate state updates for a Sesame device."""

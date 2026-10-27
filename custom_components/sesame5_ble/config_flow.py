@@ -11,7 +11,7 @@ from homeassistant.const import CONF_ADDRESS
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 
-from . import DOMAIN
+from .const import DOMAIN
 
 
 def _device_factory(model: str) -> type[Any]:
@@ -76,6 +76,12 @@ class Sesame5BleConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 "registered": bool(getattr(advertisement, "is_registered", False)),
                 "uuid": str(uuid),
             }
+
+        entries = self.hass.config_entries.async_entries(DOMAIN)
+        for entry in entries:
+            address = entry.data.get(CONF_ADDRESS)
+            if address in self._discovered_devices:
+                self._discovered_devices.pop(address)
 
         options = {
             address: (
@@ -158,7 +164,7 @@ class Sesame5BleOptionsFlow(config_entries.OptionsFlow):
     """Handle options for the integration."""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self.config_entry = config_entry
+        self._entry = config_entry
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         """Placeholder options flow."""

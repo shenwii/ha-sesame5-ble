@@ -5,12 +5,14 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import DOMAIN, SesameConfigEntry, _async_force_entry_action
+from . import SesameConfigEntry, _async_force_entry_action
+from .const import DOMAIN
 
 LOGGER = logging.getLogger(__name__)
 
@@ -44,7 +46,7 @@ class SesameForceButtonBase(ButtonEntity):
         self._entry = entry
         self._coordinator = coordinator
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),

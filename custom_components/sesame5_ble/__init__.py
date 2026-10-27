@@ -15,23 +15,10 @@ from homeassistant.exceptions import ConfigEntryNotReady
 from .coordinator import SesameCoordinator
 from .device_utils import async_command_lock_state, async_set_lock_position, ensure_device_ready
 
-
-def _is_lock_device(entry: SesameConfigEntry, coordinator: SesameCoordinator | None) -> bool:
-    """Return True for lock devices; force buttons are not created for touch devices."""
-    if coordinator is None:
-        return False
-    device = getattr(coordinator, "device", None)
-    if device is None:
-        return False
-    model = str(getattr(device, "model", entry.data.get("model", ""))).lower()
-    if not model:
-        return True
-    return "touch" not in model
-
-
 LOGGER = logging.getLogger(__name__)
 
-DOMAIN = "sesame5_ble"
+from .const import DOMAIN
+
 PLATFORMS: list[Platform] = [
     Platform.LOCK,
     Platform.SENSOR,
@@ -54,8 +41,6 @@ async def _async_force_entry_action(hass: HomeAssistant, entry: SesameConfigEntr
     coordinator = entry.runtime_data
     if coordinator is None:
         coordinator = hass.data.get(DOMAIN, {}).get(entry.entry_id)
-    if coordinator is None or not _is_lock_device(entry, coordinator):
-        return
 
     if coordinator.device_kind() != "lock":
         return
@@ -69,8 +54,6 @@ async def _async_force_entry_action(hass: HomeAssistant, entry: SesameConfigEntr
         target_locked=target_locked,
         history_name="homeassistant",
         force=True,
-        secret_key=entry.data.get("secret_key"),
-        address=str(getattr(device, "address", "unknown")),
         coordinator=coordinator,
     )
 
@@ -115,8 +98,6 @@ async def _async_set_lock_position_service(hass: HomeAssistant, call) -> None:
 
     for entry in entries:
         coordinator = entry.runtime_data or hass.data.get(DOMAIN, {}).get(entry.entry_id)
-        if coordinator is None or not _is_lock_device(entry, coordinator):
-            continue
 
         if coordinator.device_kind() != "lock":
             continue
@@ -130,8 +111,6 @@ async def _async_set_lock_position_service(hass: HomeAssistant, call) -> None:
                 device,
                 lock_position,
                 unlock_position,
-                secret_key=entry.data.get("secret_key"),
-                address=str(getattr(device, "address", "unknown")),
                 coordinator=coordinator,
             )
         except Exception as err:
@@ -157,8 +136,7 @@ async def _async_prepare_device(device: Any, entry: SesameConfigEntry) -> None:
 
     await ensure_device_ready(
         device,
-        secret_key,
-        address=str(entry.data.get(CONF_ADDRESS, "unknown")),
+        secret_key
     )
 
 
@@ -195,8 +173,8 @@ async def _async_create_gomalock_device(entry: SesameConfigEntry) -> Any:
             pass
 
     if secret_key:
-        return device_cls(address, secret_key=secret_key)
-    return device_cls(address)
+        return device_cls(address, secret_key=secret_key, reconnect_attempts=3)
+    return device_cls(address, reconnect_attempts=3)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SesameConfigEntry) -> bool:

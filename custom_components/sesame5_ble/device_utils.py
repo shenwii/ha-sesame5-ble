@@ -5,19 +5,10 @@ from __future__ import annotations
 import asyncio
 import inspect
 import logging
+import gomalock
 from typing import Any
 
 LOGGER = logging.getLogger(__name__)
-
-
-def _get_ready_lock(device: Any) -> asyncio.Lock:
-    """Return a per-device lock so setup and refresh do not race each other on login."""
-    lock = getattr(device, "_sesame_ready_lock", None)
-    if lock is None:
-        lock = asyncio.Lock()
-        setattr(device, "_sesame_ready_lock", lock)
-    return lock
-
 
 def _get_command_lock(device: Any) -> asyncio.Lock:
     """Return a per-device lock so lock/unlock actions are serialized."""
@@ -35,52 +26,36 @@ async def _async_await_if_needed(result: Any) -> Any:
     return result
 
 
-async def ensure_device_ready(device: Any, secret_key: str | None = None, *, address: str | None = None) -> None:
+async def ensure_device_ready(device: Any, secret_key: str | None = None) -> None:
     """Ensure the device is connected and logged in before use."""
     if device is None:
         return
 
-    secret_key = secret_key if secret_key is not None else getattr(device, "secret_key", None)
-    if secret_key is None:
-        raise ValueError("Missing SECRET_KEY for Sesame device")
+    connected = bool(getattr(device, "is_connected", False))
+    logged_in = bool(getattr(device, "is_logged_in", False))
+    if connected and logged_in:
+        return
 
-    if getattr(device, "secret_key", None) is None:
+    if not connected:
         try:
-            setattr(device, "secret_key", secret_key)
+            await device.connect()
+        except Exception as err:
+            LOGGER.debug(
+                "Reconnect failed for Sesame device %s: %s",
+                getattr(device, "address", "unknown"),
+                err,
+            )
+            raise
+
+    if not logged_in:
+        try:
+            await device.login(secret_key=secret_key)
         except Exception:
-            pass
-
-    ready_lock = _get_ready_lock(device)
-    async with ready_lock:
-        connected = bool(getattr(device, "is_connected", False))
-        logged_in = bool(getattr(device, "is_logged_in", False))
-        if connected and logged_in:
-            return
-
-        if not connected:
-            connect_method = getattr(device, "connect", None)
-            if connect_method is not None:
-                try:
-                    await _async_await_if_needed(connect_method())
-                except Exception as err:
-                    LOGGER.debug(
-                        "Reconnect failed for Sesame device %s: %s",
-                        address or getattr(device, "address", "unknown"),
-                        err,
-                    )
-                    raise
-
-        if not getattr(device, "is_logged_in", False):
-            login_method = getattr(device, "login", None)
-            if login_method is not None:
-                try:
-                    await _async_await_if_needed(login_method(secret_key))
-                except Exception:
-                    LOGGER.warning(
-                        "Login failed for Sesame device %s; secret key may be stale or invalid",
-                        address or getattr(device, "address", "unknown"),
-                    )
-                    raise
+            LOGGER.warning(
+                "Login failed for Sesame device %s; secret key may be stale or invalid",
+                getattr(device, "address", "unknown"),
+            )
+            raise
 
 
 async def async_command_lock_state(
@@ -89,8 +64,6 @@ async def async_command_lock_state(
     target_locked: bool,
     history_name: str = "homeassistant",
     force: bool = False,
-    secret_key: str | None = None,
-    address: str | None = None,
     coordinator: Any | None = None,
 ) -> None:
     """Execute a lock/unlock command.
@@ -108,13 +81,14 @@ async def async_command_lock_state(
         if not force and current_locked == target_locked:
             return
 
-        if not getattr(device, "is_connected", False) or not getattr(device, "is_logged_in", False):
-            if not force:
-                return
-            await ensure_device_ready(device, secret_key, address=address)
-
         method_name = "lock" if target_locked else "unlock"
-        await async_call_device_method(device, method_name, history_name)
+        while True:
+            try:
+                await async_call_device_method(device, method_name, history_name)
+                break
+            except (asyncio.TimeoutError, gomalock.SesameConnectionError):
+                await device.wait_for_reconnect()
+        
 
 
 async def async_call_device_method(device: Any, method_name: str, *args: Any, **kwargs: Any) -> Any:
@@ -131,15 +105,15 @@ async def async_set_lock_position(
     lock_position: int,
     unlock_position: int,
     *,
-    secret_key: str | None = None,
-    address: str | None = None,
     coordinator: Any | None = None,
 ) -> None:
     """Set the Sesame lock and unlock position thresholds after ensuring readiness."""
     if device is None:
         return
 
-    if not getattr(device, "is_connected", False) or not getattr(device, "is_logged_in", False):
-        await ensure_device_ready(device, secret_key, address=address)
-
-    await async_call_device_method(device, "set_lock_position", int(lock_position), int(unlock_position))
+    while True:
+        try:
+            await async_call_device_method(device, "set_lock_position", int(lock_position), int(unlock_position))
+            break
+        except (asyncio.TimeoutError, gomalock.SesameConnectionError):
+            await device.wait_for_reconnect()

@@ -65,7 +65,7 @@ class SesameBatterySensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_battery"
         self._attr_name = "Battery"
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),
@@ -103,7 +103,7 @@ class SesameTouchBatterySensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_touch_battery"
         self._attr_name = "Battery"
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),
@@ -138,7 +138,7 @@ class SesameTouchCardCountSensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_touch_cards"
         self._attr_name = "Cards Number"
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),
@@ -169,7 +169,7 @@ class SesameTouchFingerprintCountSensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_touch_fingerprints"
         self._attr_name = "Fingerprints Number"
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),
@@ -200,7 +200,7 @@ class SesameTouchPasswordCountSensor(SensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_touch_passwords"
         self._attr_name = "Passwords Number"
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),
@@ -233,7 +233,7 @@ class SesameLockPositionSensor(SensorEntity):
         self._attr_icon = "mdi:angle-acute"
         self._attr_native_unit_of_measurement = DEGREE
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),
@@ -267,7 +267,7 @@ class SesameLockThresholdSensor(SensorEntity):
         self._attr_icon = "mdi:angle-acute"
         self._attr_native_unit_of_measurement = DEGREE
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),
@@ -301,7 +301,7 @@ class SesameUnlockThresholdSensor(SensorEntity):
         self._attr_icon = "mdi:angle-acute"
         self._attr_native_unit_of_measurement = DEGREE
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),

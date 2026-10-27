@@ -16,7 +16,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import SesameConfigEntry
-
+from .const import DOMAIN
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -45,7 +45,7 @@ class SesameLockStateBinarySensor(BinarySensorEntity):
         self._attr_unique_id = f"{entry.entry_id}_lock_state"
         self._attr_name = "Lock State"
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),

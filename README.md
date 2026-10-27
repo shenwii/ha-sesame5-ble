@@ -1,6 +1,6 @@
 # ha-sesame5-ble
 
-![Sesame 5 BLE banner](brands/sesame5_ble_banner.svg)
+![Sesame 5 BLE banner](custom_components/sesame5_ble/brand/logo.svg)
 
 Home Assistant custom integration for Sesame BLE locks and Touch devices using the `gomalock` Python library.
 
@@ -10,10 +10,8 @@ This project is built for a local-first, low-power Bluetooth workflow. State upd
 
 The repository includes a white-background visual set designed for GitHub, HACS, and marketplace presentation:
 
-- `brands/sesame5_ble_banner.svg` — wide banner for README and project headers
-- `brands/sesame5_ble_promo.svg` — product-style hero graphic for promotion
-- `brands/sesame5_ble_white.svg` — clean icon variant for cards and listings
-- `custom_components/sesame5_ble/icon.svg` and `icon_brand.svg` — Home Assistant component icon variants
+- `custom_components/sesame5_ble/brand/icon.svg` — Home Assistant component icon variants
+- `custom_components/sesame5_ble/brand/logo.svg` wide banner for README and project headers
 
 ## Release summary
 

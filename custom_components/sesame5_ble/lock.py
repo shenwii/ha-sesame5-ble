@@ -9,8 +9,9 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from . import DOMAIN, SesameConfigEntry
+from . import SesameConfigEntry
 from .device_utils import async_command_lock_state
+from .const import DOMAIN
 
 
 async def async_setup_entry(
@@ -39,7 +40,7 @@ class SesameLockEntity(LockEntity):
         self._attr_unique_id = f"{entry.entry_id}_lock"
         self._attr_name = "Sesame Lock"
         self._attr_device_info = {
-            "identifiers": {("sesame5_ble", entry.data.get("address", entry.entry_id))},
+            "identifiers": {(DOMAIN, entry.data.get("address", entry.entry_id))},
             "name": f"Sesame {entry.data.get('model', 'Device')}",
             "manufacturer": "Sesame",
             "model": entry.data.get("model", "Sesame"),
@@ -95,8 +96,6 @@ class SesameLockEntity(LockEntity):
             target_locked=True,
             history_name=self._history_name,
             force=False,
-            secret_key=self._entry.data.get("secret_key"),
-            address=str(getattr(self._coordinator.device, "address", "unknown")),
             coordinator=self._coordinator,
         )
 
@@ -107,8 +106,6 @@ class SesameLockEntity(LockEntity):
             target_locked=False,
             history_name=self._history_name,
             force=False,
-            secret_key=self._entry.data.get("secret_key"),
-            address=str(getattr(self._coordinator.device, "address", "unknown")),
             coordinator=self._coordinator,
         )
 
@@ -119,7 +116,5 @@ class SesameLockEntity(LockEntity):
             target_locked=False,
             history_name=self._history_name,
             force=False,
-            secret_key=self._entry.data.get("secret_key"),
-            address=str(getattr(self._coordinator.device, "address", "unknown")),
             coordinator=self._coordinator,
         )
