@@ -1,0 +1,8 @@
+{
+  "name": "Sesame 5 BLE",
+  "content_in_root": false,
+  "filename": "custom_components/sesame5_ble/manifest.json",
+  "domains": ["sesame5_ble"],
+  "homeassistant": "2024.1.0",
+  "render_readme": true
+}

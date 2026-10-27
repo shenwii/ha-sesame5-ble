@@ -1,0 +1,20 @@
+{
+    "domain": "sesame5_ble",
+    "name": "Sesame 5 BLE",
+    "bluetooth": [
+        {
+            "service_uuid": "0000fd81-0000-1000-8000-00805f9b34fb"
+        }
+    ],
+    "codeowners": ["@shenwii"],
+    "config_flow": true,
+    "dependencies": ["bluetooth_adapters"],
+    "documentation": "https://github.com/shenwii/ha-sesame5-ble",
+    "iot_class": "local_push",
+    "issue_tracker": "https://github.com/shenwii/ha-sesame5-ble/issues",
+    "requirements": [
+        "homeassistant>=2024.1.0",
+        "gomalock==2.1.0"
+    ],
+    "version": "0.2.0"
+}

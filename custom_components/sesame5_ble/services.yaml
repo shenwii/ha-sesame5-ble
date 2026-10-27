@@ -1,0 +1,48 @@
+lock:
+  name: Force Lock
+  description: Force the Sesame lock to the locked state.
+  fields:
+    entry_id:
+      name: Entry ID
+      description: Optional config entry ID to target. If omitted, all Sesame lock entries are affected.
+      required: false
+      selector:
+        text:
+
+unlock:
+  name: Force Unlock
+  description: Force the Sesame lock to the unlocked state.
+  fields:
+    entry_id:
+      name: Entry ID
+      description: Optional config entry ID to target. If omitted, all Sesame lock entries are affected.
+      required: false
+      selector:
+        text:
+
+set_lock_position:
+  name: Set Lock Position
+  description: Set the lock and unlock position thresholds for the Sesame lock.
+  fields:
+    entry_id:
+      name: Entry ID
+      description: Optional config entry ID to target. If omitted, all Sesame lock entries are affected.
+      required: false
+      selector:
+        text:
+    lock_position:
+      name: Lock Position
+      description: The position threshold for locking the Sesame lock.
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 100
+    unlock_position:
+      name: Unlock Position
+      description: The position threshold for unlocking the Sesame lock.
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 100

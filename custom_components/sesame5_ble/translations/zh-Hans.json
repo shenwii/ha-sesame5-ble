@@ -1,0 +1,54 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "添加 Sesame 设备",
+        "description": "扫描附近的 Sesame BLE 设备并选择要配置的设备。",
+        "data": {
+          "address": "设备"
+        }
+      },
+      "register_confirm": {
+        "title": "注册新 Sesame 设备",
+        "description": "这个 Sesame 设备尚未注册。是否立即注册并保存生成的 SECRET_KEY？",
+        "data": {
+          "register": "立即注册"
+        }
+      },
+      "secret_key": {
+        "title": "输入 Secret Key",
+        "description": "这个 Sesame 设备已注册。请输入 Sesame 应用或二维码中获取的 SECRET_KEY。",
+        "data": {
+          "secret_key": "SECRET_KEY"
+        }
+      }
+    },
+    "abort": {
+      "no_devices_found": "附近没有发现 Sesame BLE 设备。",
+      "device_not_found": "无法找到所选设备。",
+      "not_registered": "设备未注册。",
+      "register_failed": "无法注册该设备，请保持设备靠近并重试。",
+      "invalid_secret_key": "Secret Key 为空或无效。"
+    }
+  },
+  "entity": {
+    "lock": {
+      "sesame_lock": {
+        "name": "Sesame 门锁"
+      }
+    },
+    "sensor": {
+      "battery": {
+        "name": "电池"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Sesame 选项",
+        "data": {}
+      }
+    }
+  }
+}

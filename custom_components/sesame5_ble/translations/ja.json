@@ -1,0 +1,54 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Sesame デバイスを追加",
+        "description": "近くの Sesame BLE デバイスをスキャンして設定するデバイスを選択してください。",
+        "data": {
+          "address": "デバイス"
+        }
+      },
+      "register_confirm": {
+        "title": "新しい Sesame デバイスの登録",
+        "description": "この Sesame デバイスはまだ登録されていません。今すぐ登録して生成された SECRET_KEY を保存しますか？",
+        "data": {
+          "register": "今すぐ登録"
+        }
+      },
+      "secret_key": {
+        "title": "Secret Key を入力",
+        "description": "この Sesame デバイスはすでに登録済みです。Sesame アプリまたは QR コードから取得した SECRET_KEY を入力してください。",
+        "data": {
+          "secret_key": "SECRET_KEY"
+        }
+      }
+    },
+    "abort": {
+      "no_devices_found": "近くに Sesame BLE デバイスが見つかりませんでした。",
+      "device_not_found": "選択したデバイスが見つかりませんでした。",
+      "not_registered": "デバイスは登録されていません。",
+      "register_failed": "デバイスの登録に失敗しました。デバイスを近づけて再試行してください。",
+      "invalid_secret_key": "Secret Key が空または無効です。"
+    }
+  },
+  "entity": {
+    "lock": {
+      "sesame_lock": {
+        "name": "Sesame ドアロック"
+      }
+    },
+    "sensor": {
+      "battery": {
+        "name": "バッテリー"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Sesame 設定",
+        "data": {}
+      }
+    }
+  }
+}

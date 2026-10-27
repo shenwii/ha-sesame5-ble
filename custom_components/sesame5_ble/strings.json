@@ -1,0 +1,54 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add Sesame device",
+        "description": "Scan nearby Sesame BLE devices and select one to configure.",
+        "data": {
+          "address": "Device"
+        }
+      },
+      "register_confirm": {
+        "title": "Register new Sesame device",
+        "description": "This Sesame device is not yet registered. Do you want to register it now and store the generated SECRET_KEY?",
+        "data": {
+          "register": "Register now"
+        }
+      },
+      "secret_key": {
+        "title": "Enter secret key",
+        "description": "This Sesame device is already registered. Enter the SECRET_KEY from the Sesame app or QR code.",
+        "data": {
+          "secret_key": "SECRET_KEY"
+        }
+      }
+    },
+    "abort": {
+      "no_devices_found": "No Sesame BLE devices were found nearby.",
+      "device_not_found": "The selected device could not be found.",
+      "not_registered": "The device was not registered.",
+      "register_failed": "Unable to register the device. Please keep it close and try again.",
+      "invalid_secret_key": "The secret key is invalid or empty."
+    }
+  },
+  "entity": {
+    "lock": {
+      "sesame_lock": {
+        "name": "Sesame Lock"
+      }
+    },
+    "sensor": {
+      "battery": {
+        "name": "Battery"
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Sesame options",
+        "data": {}
+      }
+    }
+  }
+}
