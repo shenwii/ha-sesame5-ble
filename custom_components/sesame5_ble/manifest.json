@@ -16,5 +16,8 @@
         "homeassistant>=2024.1.0",
         "gomalock==2.1.0"
     ],
-    "version": "0.2.0"
+    "version": "0.2.0",
+    "categories": [
+        "security_safety.locks_access"
+    ]
 }
