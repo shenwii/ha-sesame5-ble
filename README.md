@@ -11,7 +11,7 @@ This project is built for a local-first, low-power Bluetooth workflow. State upd
 The repository includes a white-background visual set designed for GitHub, HACS, and marketplace presentation:
 
 - `custom_components/sesame5_ble/brand/icon.svg` — Home Assistant component icon variants
-- `custom_components/sesame5_ble/brand/logo.svg` wide banner for README and project headers
+- `custom_components/sesame5_ble/brand/logo.svg` — wide banner for README and project headers
 
 ## Release summary
 
