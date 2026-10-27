@@ -7,6 +7,7 @@ from typing import Any
 
 import gomalock
 import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_ADDRESS, Platform
 from homeassistant.core import HomeAssistant
@@ -32,6 +33,7 @@ SERVICE_SCHEMA = vol.Schema({
     vol.Optional("unlock_position"): int,
 })
 
+CONFIG_SCHEMA = cv.config_entry_only_config_schema
 
 type SesameConfigEntry = ConfigEntry[SesameCoordinator]
 
