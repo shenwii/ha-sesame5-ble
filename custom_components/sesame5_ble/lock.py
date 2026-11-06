@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.lock import LockEntity
+from homeassistant.components.lock import LockEntity, LockEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -32,6 +32,7 @@ class SesameLockEntity(LockEntity):
     """Representation of a Sesame lock."""
 
     _attr_has_entity_name = True
+    _attr_supported_features = LockEntityFeature.OPEN
     _attr_device_class = "door"
 
     def __init__(self, entry: ConfigEntry, coordinator: Any) -> None:

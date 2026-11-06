@@ -1,2 +1,2 @@
 homeassistant>=2024.1.0
-gomalock==2.1.0
+"git+https://github.com/meronepy/gomalock.git@main#egg=gomalock"

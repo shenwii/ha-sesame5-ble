@@ -83,6 +83,9 @@ class Sesame5BleConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if address in self._discovered_devices:
                 self._discovered_devices.pop(address)
 
+        if not self._discovered_devices:
+            return self.async_abort(reason="no_devices_found")
+
         options = {
             address: (
                 f"{info['address']} | model={info['model']} | "

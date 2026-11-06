@@ -62,11 +62,12 @@ class SesameLockStateBinarySensor(BinarySensorEntity):
         state = self._coordinator.data
         if not isinstance(state, dict):
             return None
-        if "is_locked" in state:
-            return not bool(state.get("is_locked"))
-        if "locked" in state:
-            return not bool(state.get("locked"))
-        return None
+        val = state.get("is_locked")
+        if val is None:
+            val = state.get("locked")
+        if val is None:
+            return None
+        return not bool(val)
 
     @property
     def available(self) -> bool:

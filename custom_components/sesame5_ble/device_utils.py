@@ -5,10 +5,17 @@ from __future__ import annotations
 import asyncio
 import inspect
 import logging
-import gomalock
 from typing import Any
 
 LOGGER = logging.getLogger(__name__)
+
+def _get_ready_lock(device: Any) -> asyncio.Lock:
+    """Return a per-device lock so setup and refresh do not race each other on login."""
+    lock = getattr(device, "_sesame_ready_lock", None)
+    if lock is None:
+        lock = asyncio.Lock()
+        setattr(device, "_sesame_ready_lock", lock)
+    return lock
 
 def _get_command_lock(device: Any) -> asyncio.Lock:
     """Return a per-device lock so lock/unlock actions are serialized."""
@@ -36,27 +43,31 @@ async def ensure_device_ready(device: Any, secret_key: str | None = None) -> Non
     if connected and logged_in:
         return
 
-    if not connected:
-        try:
-            await device.connect()
-        except Exception as err:
-            LOGGER.debug(
-                "Reconnect failed for Sesame device %s: %s",
-                getattr(device, "address", "unknown"),
-                err,
-            )
-            raise
+    ready_lock = _get_ready_lock(device)
+    async with ready_lock:
+        if bool(getattr(device, "is_connected", False)) and bool(getattr(device, "is_logged_in", False)):
+            return
 
-    if not logged_in:
-        try:
-            await device.login(secret_key=secret_key)
-        except Exception:
-            LOGGER.warning(
-                "Login failed for Sesame device %s; secret key may be stale or invalid",
-                getattr(device, "address", "unknown"),
-            )
-            raise
+        if not getattr(device, "is_connected", False):
+            try:
+                await device.connect()
+            except Exception as err:
+                LOGGER.debug(
+                    "Reconnect failed for Sesame device %s: %s",
+                    getattr(device, "address", "unknown"),
+                    err,
+                )
+                raise
 
+        if not getattr(device, "is_logged_in", False):
+            try:
+                await device.login(secret_key=secret_key)
+            except Exception:
+                LOGGER.warning(
+                    "Login failed for Sesame device %s; secret key may be stale or invalid",
+                    getattr(device, "address", "unknown"),
+                )
+                raise
 
 async def async_command_lock_state(
     device: Any,
@@ -74,6 +85,9 @@ async def async_command_lock_state(
     if device is None:
         return
 
+    secret_key = coordinator.entry.data.get("secret_key") if coordinator and getattr(coordinator, "entry", None) else getattr(device, "_secret_key", None)
+    await asyncio.wait_for(ensure_device_ready(device, secret_key), timeout=8.0)
+
     command_lock = _get_command_lock(device)
     async with command_lock:
         current_status = getattr(device, "mech_status", None)
@@ -82,15 +96,8 @@ async def async_command_lock_state(
             return
 
         method_name = "lock" if target_locked else "unlock"
-        while True:
-            try:
-                await async_call_device_method(device, method_name, history_name)
-                break
-            except (asyncio.TimeoutError, gomalock.SesameConnectionError):
-                await device.wait_for_reconnect()
+        await async_call_device_method(device, method_name, history_name)
         
-
-
 async def async_call_device_method(device: Any, method_name: str, *args: Any, **kwargs: Any) -> Any:
     """Call a device method regardless of whether it is sync or async."""
     method = getattr(device, method_name, None)
@@ -111,9 +118,6 @@ async def async_set_lock_position(
     if device is None:
         return
 
-    while True:
-        try:
-            await async_call_device_method(device, "set_lock_position", int(lock_position), int(unlock_position))
-            break
-        except (asyncio.TimeoutError, gomalock.SesameConnectionError):
-            await device.wait_for_reconnect()
+    secret_key = coordinator.entry.data.get("secret_key") if coordinator and getattr(coordinator, "entry", None) else getattr(device, "_secret_key", None)
+    await asyncio.wait_for(ensure_device_ready(device, secret_key), timeout=8.0)
+    await async_call_device_method(device, "set_lock_position", int(lock_position), int(unlock_position))

@@ -33,7 +33,7 @@ SERVICE_SCHEMA = vol.Schema({
     vol.Optional("unlock_position"): int,
 })
 
-CONFIG_SCHEMA = cv.config_entry_only_config_schema
+CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 type SesameConfigEntry = ConfigEntry[SesameCoordinator]
 
@@ -44,7 +44,7 @@ async def _async_force_entry_action(hass: HomeAssistant, entry: SesameConfigEntr
     if coordinator is None:
         coordinator = hass.data.get(DOMAIN, {}).get(entry.entry_id)
 
-    if coordinator.device_kind() != "lock":
+    if coordinator is None or coordinator.device_kind() != "lock":
         return
 
     device = coordinator.device
@@ -101,7 +101,7 @@ async def _async_set_lock_position_service(hass: HomeAssistant, call) -> None:
     for entry in entries:
         coordinator = entry.runtime_data or hass.data.get(DOMAIN, {}).get(entry.entry_id)
 
-        if coordinator.device_kind() != "lock":
+        if coordinator is None or coordinator.device_kind() != "lock":
             continue
         
         device = coordinator.device
@@ -175,8 +175,8 @@ async def _async_create_gomalock_device(entry: SesameConfigEntry) -> Any:
             pass
 
     if secret_key:
-        return device_cls(address, secret_key=secret_key, reconnect_attempts=3)
-    return device_cls(address, reconnect_attempts=3)
+        return device_cls(address, secret_key=secret_key)
+    return device_cls(address)
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: SesameConfigEntry) -> bool:

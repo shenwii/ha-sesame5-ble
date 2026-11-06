@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import Any
 
@@ -11,6 +12,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 LOGGER = logging.getLogger(__name__)
 
+from .device_utils import ensure_device_ready
 from .const import DOMAIN
 
 class SesameCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -27,6 +29,7 @@ class SesameCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         super().__init__(
             hass,
             LOGGER,
+            config_entry=entry,
             name=f"{DOMAIN}_{entry.entry_id}",
             update_interval=None,
         )
@@ -151,11 +154,31 @@ class SesameCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         return _wrapper
 
+    def _make_disconnect_wrapper(self):
+        """Wrap the original callback so HA updates are triggered without dropping the library callback."""
+        async def _async_reconnect_until_success(device, secret_key):
+            while True:
+                try:
+                    await ensure_device_ready(device, secret_key)
+                    break
+                except Exception as err:
+                    LOGGER.warning("Failed to reconnect to Sesame device %s: %s", device, err)
+                    await asyncio.sleep(5)
+
+        def _wrapper(device_obj: Any | None) -> None:
+
+            self.hass.async_create_task(
+                _async_reconnect_until_success(self.device, self.entry.data.get("secret_key"))
+            )
+
+        return _wrapper
+
     def _attach_device_callbacks(self) -> None:
         """Attach gomalock callbacks to update HA state in real time."""
         if self.device is None:
             return
         self.device.register_mech_status_callback(self._make_callback_wrapper())
+        self.device.register_unexpected_disconnect_callback(self._make_disconnect_wrapper())
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Read the latest state from the gomalock device.
