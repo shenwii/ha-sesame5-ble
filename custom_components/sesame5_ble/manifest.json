@@ -15,7 +15,7 @@
     "issue_tracker": "https://github.com/shenwii/ha-sesame5-ble/issues",
     "requirements": [
         "homeassistant>=2024.1.0",
-        "git+https://github.com/meronepy/gomalock.git@main#egg=gomalock"
+        "gomalock @ git+https://github.com/meronepy/gomalock.git@main"
     ],
     "version": "0.2.0"
 }
